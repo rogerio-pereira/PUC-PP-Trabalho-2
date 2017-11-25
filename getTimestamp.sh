@@ -1,0 +1,1 @@
+ jq '.timestamp' logs.json
