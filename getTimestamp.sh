@@ -1,23 +1,23 @@
- jq '.timestamp' log/views/15h/logs_view_1.json
- jq '.timestamp' log/views/15h/logs_view_2.json
- jq '.timestamp' log/views/15h/logs_view_3.json
- jq '.timestamp' log/views/15h/logs_view_4.json
- jq '.timestamp' log/views/15h/logs_view_5.json
- jq '.timestamp' log/views/15h/logs_view_6.json
- jq '.timestamp' log/views/15h/logs_view_7.json
- jq '.timestamp' log/views/15h/logs_view_8.json
- jq '.timestamp' log/views/15h/logs_view_9.json
- jq '.timestamp' log/views/15h/logs_view_10.json
- jq '.timestamp' log/views/15h/logs_view_11.json
- jq '.timestamp' log/views/15h/logs_view_12.json
- jq '.timestamp' log/views/15h/logs_view_13.json
- jq '.timestamp' log/views/15h/logs_view_14.json
- jq '.timestamp' log/views/15h/logs_view_15.json
- jq '.timestamp' log/views/15h/logs_view_16.json
- jq '.timestamp' log/views/15h/logs_view_17.json
- jq '.timestamp' log/views/15h/logs_view_18.json
- jq '.timestamp' log/views/15h/logs_view_19.json
- jq '.timestamp' log/views/15h/logs_view_20.json
+jq '.timestamp' log/views/15h/logs_view_1.json
+jq '.timestamp' log/views/15h/logs_view_2.json
+jq '.timestamp' log/views/15h/logs_view_3.json
+jq '.timestamp' log/views/15h/logs_view_4.json
+jq '.timestamp' log/views/15h/logs_view_5.json
+jq '.timestamp' log/views/15h/logs_view_6.json
+jq '.timestamp' log/views/15h/logs_view_7.json
+jq '.timestamp' log/views/15h/logs_view_8.json
+jq '.timestamp' log/views/15h/logs_view_9.json
+jq '.timestamp' log/views/15h/logs_view_10.json
+jq '.timestamp' log/views/15h/logs_view_11.json
+jq '.timestamp' log/views/15h/logs_view_12.json
+jq '.timestamp' log/views/15h/logs_view_13.json
+jq '.timestamp' log/views/15h/logs_view_14.json
+jq '.timestamp' log/views/15h/logs_view_15.json
+jq '.timestamp' log/views/15h/logs_view_16.json
+jq '.timestamp' log/views/15h/logs_view_17.json
+jq '.timestamp' log/views/15h/logs_view_18.json
+jq '.timestamp' log/views/15h/logs_view_19.json
+jq '.timestamp' log/views/15h/logs_view_20.json
 jq '.timestamp' log/views/15h/logs_view_21.json
 jq '.timestamp' log/views/15h/logs_view_22.json
 jq '.timestamp' log/views/15h/logs_view_23.json
