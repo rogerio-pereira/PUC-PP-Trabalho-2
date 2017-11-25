@@ -8,87 +8,104 @@ int main(void)
 {
     //VARIAVEIS QUE PODEM SER ALTERADAS PARA SIMULAÇÃO
     //Todos os tempos são em minutos
-    real    tempoChegada=10.0,              //Média de Tempo de chegada de clientes
-            DPChegada=1.0,                  //Desvio Padrão da Média de Chegada 
-            tempoAtendimento=7.0,           //Média de Tempo de Atendimento 
-            DPCaixa=1.0,                    //Desvio Padrão da Média de Chegada 
-            tempoCaixa=2.0,                 //Média de Tempo de pagamento no caixa 
-            tempoSimulacao=120.0;           //Tempo total de Simulação (2 Horas)
+    real    tempoAcessoSite=0.2,            //Média de Tempo de acesso, para exibir anuncio
+            DPAcesso=1.0,                   //Desvio Padrão da Média de Acessos
+            tempoClique=2.0,                //Média de Tempo cliques nos anuncios
+            DpClique=1.0,                   //Desvio Padrão da Média de Tempo de Cliques 
+            tempoSimulacao=3600.0;          //Tempo total de Simulação (1 Hora)
     //Quantidade Facilities
-    int     qtdAtendente = 1,               //Quantidade de Garçons
-            qtdCaixas = 1,                  //Quantidade de Caixas
-            max_jobs=1000;                 //Quantidade máxima de pessoas
+    int     qtdLog = 1000,                  //Quantidade de items a serem salvos no log (numero de facilities)
+            max_jobs=1000000;                //Quantidade máxima de acessos
 
 
-    //VARIAVEIS QUE NÃO SÃO ALTERADAS PELO CLIENTE
-    int     pessoas=0,                      //Quantidade de Pessoas no total
-            pessoa=1,                       //Individuo
+    //VARIAVEIS QUE NÃO SÃO ALTERADAS PARA A SIMULACAO
+    int     acessos=0,                      //Quantidade de Acessos no Total
+            acesso=1,                       //Acesso individual
+            cliques=0,                      //Quantidade de Acessos no Total
+            clique=1,                       //Acesso individual
             event, 
-            caixa,                          //Facility Caixa
-            atendente,                      //Facility Garçom
-            qtdTotalChegada=0,              //Número de pessoas que chegaram ao estabelecimento
-            tamanhoMaximoFilaCaixa=0,       //Tamanho máximo da fila
-            tamanhoMaximoFilaAcougue=0,     //Tamanho máximo da fila
-            qtdPessoasPagaram=0,            //Quantidade de pessoas que pagaram
-            qtdPessoasChegaram=0,           //Quantidade de Pessoas que chegaram no intervalo
+            fAcesso,                        //Facility Acesso
+            fClique,                        //Facility Cliques
+            qtdTotalAcessos=0,              //Número de pessoas que chegaram ao estabelecimento
+            qtdTotalCliques=0,              //Número de pessoas que chegaram ao estabelecimento
+            tamanhoMaximoFilaAcesso=0,      //Tamanho máximo da fila de acessos
+            tamanhoMaximoFilaCliques=0,     //Tamanho máximo da fila de cliques
             qtdProcessosGerados=0;          //Quatidade de Processos Gerados
 
     float tx_cheg;
 
-    smpl(0,"Simula Fila Açougue");
+    smpl(0,"Simula Acesso a sistema");
 
     //Facilities
-    atendente = facility("atendente",qtdAtendente); 
-    caixa = facility("caixa",qtdCaixas); 
+    fAcesso = facility("acesso",1); 
+    fClique = facility("cliques",1); 
     
-    schedule(1,0.0,pessoa); 
+    schedule(1,0.0,acesso); 
 
-    while (time()<tempoSimulacao && pessoas<=max_jobs)
+    while (time()<tempoSimulacao && acessos<=max_jobs)
     {
-        cause(&event, &pessoa);
+        cause(&event, &acesso);
         switch(event)
         {
             /*
-                CHEGOU CLIENTE NO AÇOUGUE
+                Acesso a algum site
              */
             case 1: 
-                schedule(2,0.0,pessoa);
-                pessoas++;
-                qtdTotalChegada++;
+                schedule(2,0.0,acesso);
+                acessos++;
+                qtdTotalAcessos++;
                 qtdProcessosGerados++;
-                pessoa++;
-                schedule(1,expntl(tempoChegada),pessoa);
+                acesso++;
+                //Grava Log
+                if (inq(fAcesso) >= qtdLog)
+                    schedule(2,0.0,acesso);
+
+                //Novas Chegadas
+                schedule(1,expntl(tempoAcessoSite),acesso);
+                schedule(3,expntl(tempoClique),clique);
+
                 break;
             /*
-                ATENDENTE ATENDE PESSOA NO AÇOUGUE
+                Grava log Acesso
              */
             case 2:
-                if (request(atendente,pessoa,0) == 0)
-                    schedule(3,normal(tempoChegada,DPChegada),pessoa);
-                else {
-                    if (inq(atendente) > tamanhoMaximoFilaAcougue)
-                        tamanhoMaximoFilaAcougue = inq(pessoa);
+                if (request(fAcesso,acesso,0) == 0)
+                    release(fAcesso,acesso);
+                else
+                {
+                    if (inq(fAcesso) > tamanhoMaximoFilaAcesso)
+                        tamanhoMaximoFilaAcesso = inq(fAcesso);
                 }
                 break;
             /*
-                FILA CAIXA
+                Cliques
              */
             case 3:
-                    schedule(4,normal(tempoCaixa,DPCaixa),pessoa);
+                cliques++;
+                qtdTotalCliques++;
+                clique++;
+                //Grava Log
+                if (inq(fClique) >= qtdLog)
+                    schedule(4,0.0,acesso);
                 break;
             /*
-                PESSOA PAGA NO CAIXA
+                Grava Log Cliques
              */
             case 4:
-                qtdPessoasPagaram++;
-                release(atendente,pessoa);
+                if (request(fClique,clique,0) == 0)
+                    release(fClique,clique);
+                else
+                {
+                    if (inq(fClique) > tamanhoMaximoFilaCliques)
+                        tamanhoMaximoFilaCliques = inq(fClique);
+                }
                 break;
         }
     }
 
-    printf("\nNumero de pessoas que chegaram: %d",pessoas);
-    printf("\nTamanho maximo fila acougue: %d pessoas",tamanhoMaximoFilaAcougue);
-    printf("\nTamanho maximo fila caixa: %d pessoas",tamanhoMaximoFilaCaixa);
+    printf("\nNumero de acessos que chegaram: %d",acessos);
+    printf("\nTamanho maximo fila acesso: %d acessos",tamanhoMaximoFilaAcesso);
+    printf("\nTamanho maximo fila cliques: %d cliques",tamanhoMaximoFilaCliques);
     printf("\n\nPressione qualquer tecla para gerar o relatório");
     getchar();
     
