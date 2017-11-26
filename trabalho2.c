@@ -8,17 +8,18 @@ int main(void)
 {
     //VARIAVEIS QUE PODEM SER ALTERADAS PARA SIMULAÇÃO
     //Todos os tempos são em minutos
-    real    tempoAcessoSite=0.2,            //Média de Tempo de acesso, para exibir anuncio
+    real    tempoAcessoSite=0.0125,         //Média de Tempo de acesso, para exibir anuncio
             DPAcesso=1.0,                   //Desvio Padrão da Média de Acessos
-            tempoClique=2.0,                //Média de Tempo cliques nos anuncios
-            DpClique=1.0,                   //Desvio Padrão da Média de Tempo de Cliques 
-            //tempoGravarLog=0.0000012,       //Tempo para gravação de log (4 milisegundos)
-            tempoGravarLog=4.0,       //Tempo para gravação de log (4 milisegundos)
+            tempoClique=0.5,                //Média de Tempo cliques nos anuncios
+            DpClique=1.0,                   //Desvio Padrão da Média de Tempo de Cliques
+            //tempoGravarLog=0.0000012,     //Tempo para gravação de log (4 milisegundos)
+            tempoGravarLog=4.0,             //Tempo para gravação de log (4 segundos)
             DPGravarLog=1.0,                //Desvio Padrão tempo de Log
             tempoSimulacao=3600.0;          //Tempo total de Simulação (1 Hora)
     //Quantidade Facilities
-    int     qtdParaGravarLog = 1000,         //Quantidade de items a serem salvos no log (numero de facilities)
-            max_jobs=1000000;                //Quantidade máxima de acessos
+    int     taxaCliques=2,                  //Porcentagem de cliques por anuncio
+            qtdParaGravarLog = 1250,        //Quantidade de items a serem salvos no log (numero de facilities)
+            max_jobs=1000000;               //Quantidade máxima de acessos
 
 
     //VARIAVEIS QUE NÃO SÃO ALTERADAS PARA A SIMULACAO
@@ -74,22 +75,29 @@ int main(void)
                 
                 //Novas Chegadas
                 schedule(1,expntl(tempoAcessoSite),acesso);
-                schedule(4,expntl(tempoClique),clique);
+                //schedule(4,expntl(tempoClique),clique);
+
+                /*
+                    Gera numero aleatorio entre 0 e 100
+                    Se for menor do que a taxa de cliques gera clique
+                 */
+                if((rand() % 100) <= taxaCliques)
+                    schedule(4,0.0,clique);
 
                 break;
             /*
                 Grava log Acesso
              */
             case 2:
-                    if (request(fAcesso,acesso,0) == 0)
-                    {
-                        schedule(3,normal(tempoGravarLog,DPGravarLog),acesso);
-                    }
-                    else
-                    {
-                        if (inq(fAcesso) > tamanhoMaximoFilaAcesso)
-                            tamanhoMaximoFilaAcesso = inq(fAcesso);
-                    }
+                if (request(fAcesso,acesso,0) == 0)
+                {
+                    schedule(3,normal(tempoGravarLog,DPGravarLog),acesso);
+                }
+                else
+                {
+                    if (inq(fAcesso) > tamanhoMaximoFilaAcesso)
+                        tamanhoMaximoFilaAcesso = inq(fAcesso);
+                }
                 break;
             /*
                 LIBERA LOG ACESSO
@@ -100,7 +108,7 @@ int main(void)
             /*
                 Cliques
              */
-            /*case 4:
+            case 4:
                 qtdFilaLogCliques++;
                 cliques++;
 
@@ -114,27 +122,27 @@ int main(void)
                     //Limpa Fila
                     qtdFilaLogCliques=0;
                 }
-                break;*/
+                break;
             /*
                 Grava Log Cliques
              */
-            /*case 5:
+            case 5:
                 if (request(fClique,clique,0) == 0)
-                    {
-                        schedule(6,normal(tempoGravarLog,DPGravarLog),clique);
-                    }
-                    else
-                    {
-                        if (inq(fClique) > tamanhoMaximoFilaCliques)
-                            tamanhoMaximoFilaCliques = inq(fClique);
-                    }
-                break;*/
+                {
+                    schedule(6,normal(tempoGravarLog,DPGravarLog),clique);
+                }
+                else
+                {
+                    if (inq(fClique) > tamanhoMaximoFilaCliques)
+                        tamanhoMaximoFilaCliques = inq(fClique);
+                }
+                break;
             /*
                 LIBERA LOG CLIQUE
              */
-            /*case 6:
-                release(fAcesso,acesso);
-                break;*/
+            case 6:
+                release(fClique,clique);
+                break;
         }
     }
 
