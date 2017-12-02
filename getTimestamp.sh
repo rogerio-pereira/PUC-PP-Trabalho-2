@@ -1,1 +1,0 @@
-jq '.timestamp' log/cliques/15h/logs_click_1.json
